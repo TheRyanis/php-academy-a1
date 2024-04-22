@@ -1,12 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PHP learning</title>
-</head>
-<body>
-
 <?php
 
 //Default time zone set from php manual https://www.php.net/manual/en/timezones.europe.php;
@@ -18,8 +9,28 @@ echo $timeFormat;
 
 $logFilePath = "log.txt";
 
+if (isset($_POST['name'])) {
+    $data = $_POST['name'];
+    file_put_contents($logFilePath, $data, FILE_APPEND);
+}
+
+
 
 
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHP learning</title>
+</head>
+<body>
+
+    <form method="post">
+        Name: <input type="text" name="name">
+        <input type="submit">
+    </form>
+
 </body>
 
