@@ -2,8 +2,9 @@
 
 date_default_timezone_set("Europe/Bratislava");
 
-class Logger
-{
+echo date("Y-m-d H:i:s");
+
+class Logger {
     private static $studentsFile = "students.json";
     private static $arrivalsFile = "prichody.json";
 
@@ -22,12 +23,15 @@ class Logger
         if (!empty($name)) {
             $logData = file_exists(self::$studentsFile) ? json_decode(file_get_contents(self::$studentsFile), true) : [];
 
+            $totalArrivals = isset($logData['total_arrivals']) ? $logData['total_arrivals'] + 1 : 1;
+
             $logData[] = array(
                 'name' => $name,
                 'time' => date("Y-m-d H:i:s"),
                 'late' => $late ? 'Yes' : 'No'
             );
 
+            $logData['total_arrivals'] = $totalArrivals;
             file_put_contents(self::$studentsFile, json_encode($logData, JSON_PRETTY_PRINT));
         }
     }
