@@ -1,64 +1,94 @@
 <?php
 
-//Default time zone set from PHP manual https://www.php.net/manual/en/timezones.europe.php;
 date_default_timezone_set("Europe/Bratislava");
 
-// Time with this format saved in a variable 2023-12-07 23:59:59;
-$timeFormat = date("Y-m-d H:i:s");
-echo $timeFormat;
-
-$logFilePath = "students.json";
-
-if (date('H') >= 20 && date('H') <= 0) {
-    die("You cannot enter school between 20 and 24");
-}
-
-function isLateMorning()
+class Logger
 {
-    $hour = date("H");
-    return ($hour >= 8);
-}
+    private static $studentsFile = "students.json";
+    private static $arrivalsFile = "prichody.json";
 
-function logStudent($name, $late)
-{
-    global $logFilePath, $timeFormat;
-
-    if (!empty($name)) {
-        $logData = file_exists($logFilePath) ? json_decode(file_get_contents($logFilePath), true) : [];
-
-        $logData[] = array(
-            'name' => $name,
-            'time' => $timeFormat,
-            'late' => $late ? 'Yes' : 'no'
-        );
-
-        file_put_contents($logFilePath, json_encode($logData, JSON_PRETTY_PRINT));
+    public static function isLateMorning()
+    {
+        $hour = date("H");
+        return ($hour >= 8);
     }
-}
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = $_POST['name'];
-    $late = isLateMorning();
-
-    logStudent($name, $late);
-}
-
-function displayStudentData()
-{
-    global $logFilePath;
-    $studentData = file_exists($logFilePath) ? json_decode(file_get_contents($logFilePath), true) : [];
-    if (!empty($studentData)) {
-        foreach ($studentData as $student) {
-            echo "Name: " . $student['name'] . "\n";
-            echo "Time: " . $student['time'] . "\n";
-            echo "Late: " . ($student['late']) . "\n\n";
+    public static function logStudent($name, $late)
+    {
+        if (date('H') >= 20 || date('H') <= 0) {
+            die("You cannot enter school between 20 and 24");
         }
-    } else {
+
+        if (!empty($name)) {
+            $logData = file_exists(self::$studentsFile) ? json_decode(file_get_contents(self::$studentsFile), true) : [];
+
+            $logData[] = array(
+                'name' => $name,
+                'time' => date("Y-m-d H:i:s"),
+                'late' => $late ? 'Yes' : 'No'
+            );
+
+            file_put_contents(self::$studentsFile, json_encode($logData, JSON_PRETTY_PRINT));
+        }
+    }
+
+    public static function logCustomMessage($message)
+    {
+        if (!empty($message)) {
+            $logData = file_exists(self::$arrivalsFile) ? json_decode(file_get_contents(self::$arrivalsFile), true) : [];
+
+            $logData[] = array(
+                'message' => $message,
+                'time' => date("Y-m-d H:i:s")
+            );
+
+            file_put_contents(self::$arrivalsFile, json_encode($logData, JSON_PRETTY_PRINT));
+        }
+    }
+
+    public static function displayStudentData()
+    {
+        if (file_exists(self::$studentsFile)) {
+            $studentData = json_decode(file_get_contents(self::$studentsFile), true);
+            if (!empty($studentData)) {
+                print_r($studentData);
+                return;
+            }
+        }
         echo "No student data available";
     }
+
+
+
+    public static function displayCustomMessages()
+    {
+        $arrivalsData = file_exists(self::$arrivalsFile) ? json_decode(file_get_contents(self::$arrivalsFile), true) : [];
+        if (!empty($arrivalsData)) {
+            print_r($arrivalsData);
+        } else {
+            echo "No messages available";
+        }
+    }
 }
 
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    if (isset($_POST['name'])) {
+        $name = $_POST['name'];
+        $late = Logger::isLateMorning();
+
+        Logger::logStudent($name, $late);
+    } else if (isset($_POST['custom_message'])) {
+        $customMessage = $_POST['custom_message'];
+
+        Logger::logCustomMessage($customMessage);
+    }
+}
+
+
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -70,19 +100,27 @@ function displayStudentData()
 
 <form method="post">
     Name: <input type="text" name="name">
-    <input type="submit">
+    <input type="submit" value="Log Student">
 </form>
-<h3>Student Data</h3>
+
 <form method="post">
-    <input type="hidden" name="action" value="display_data">
-    <input type="submit" value="Display Student Data">
+    Custom Message: <input type="text" name="custom_message">
+    <input type="submit" value="Log Custom Message">
 </form>
+
+<h3>Student Data</h3>
 <pre>
         <?php
-        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['action'] == 'display_data') {
-            displayStudentData();
-        }
+        Logger::displayStudentData();
         ?>
 </pre>
+
+<h3>Custom Messages</h3>
+<pre>
+        <?php
+        Logger::displayCustomMessages();
+        ?>
+</pre>
+
 </body>
 </html>
