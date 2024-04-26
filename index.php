@@ -5,8 +5,8 @@ date_default_timezone_set("Europe/Bratislava");
 echo date("Y-m-d H:i:s");
 
 class Logger {
-    private static $studentsFile = "students.json";
-    private static $arrivalsFile = "prichody.json";
+    private const students = "students.json";
+    private const prichody = "prichody.json";
 
     public static function isLateMorning()
     {
@@ -21,7 +21,7 @@ class Logger {
         }
 
         if (!empty($name)) {
-            $logData = file_exists(self::$studentsFile) ? json_decode(file_get_contents(self::$studentsFile), true) : [];
+            $logData = file_exists(self::students) ? json_decode(file_get_contents(self::students), true) : [];
 
             $totalArrivals = isset($logData['total_arrivals']) ? $logData['total_arrivals'] + 1 : 1;
 
@@ -32,64 +32,73 @@ class Logger {
             );
 
             $logData['total_arrivals'] = $totalArrivals;
-            file_put_contents(self::$studentsFile, json_encode($logData, JSON_PRETTY_PRINT));
+            file_put_contents(self::students, json_encode($logData, JSON_PRETTY_PRINT));
         }
     }
 
     public static function logCustomMessage($message)
     {
         if (!empty($message)) {
-            $logData = file_exists(self::$arrivalsFile) ? json_decode(file_get_contents(self::$arrivalsFile), true) : [];
+            $logData = file_exists(self::prichody) ? json_decode(file_get_contents(self::prichody), true) : [];
 
             $logData[] = array(
                 'message' => $message,
                 'time' => date("Y-m-d H:i:s")
             );
 
-            file_put_contents(self::$arrivalsFile, json_encode($logData, JSON_PRETTY_PRINT));
+            file_put_contents(self::prichody, json_encode($logData, JSON_PRETTY_PRINT));
         }
     }
 
     public static function displayStudentData()
     {
-        if (file_exists(self::$studentsFile)) {
-            $studentData = json_decode(file_get_contents(self::$studentsFile), true);
+        if (file_exists(self::students)) {
+            $studentData = json_decode(file_get_contents(self::students), true);
             if (!empty($studentData)) {
-                print_r($studentData);
+                echo "<h3>Total Students: {$studentData['total_arrivals']}</h3>";
+                echo "<table border='1'>";
+                echo "<tr><th>Name</th><th>Time</th><th>Late</th></tr>";
+                foreach ($studentData as $key => $student) {
+                    if ($key !== 'total_arrivals') {
+                        echo "<tr>";
+                        echo "<td>{$student['name']}</td>";
+                        echo "<td>{$student['time']}</td>";
+                        echo "<td>{$student['late']}</td>";
+                        echo "</tr>";
+                    }
+                }
+                echo "</table>";
                 return;
             }
         }
         echo "No student data available";
     }
 
-
-
     public static function displayCustomMessages()
     {
-        $arrivalsData = file_exists(self::$arrivalsFile) ? json_decode(file_get_contents(self::$arrivalsFile), true) : [];
+        $arrivalsData = file_exists(self::prichody) ? json_decode(file_get_contents(self::prichody), true) : [];
         if (!empty($arrivalsData)) {
-            print_r($arrivalsData);
+            echo "<ul>";
+            foreach ($arrivalsData as $message) {
+                echo "<li>{$message['message']} | Time: {$message['time']}</li>";
+            }
+            echo "</ul>";
         } else {
             echo "No messages available";
         }
     }
 }
 
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
     if (isset($_POST['name'])) {
         $name = $_POST['name'];
         $late = Logger::isLateMorning();
-
         Logger::logStudent($name, $late);
     } else if (isset($_POST['custom_message'])) {
         $customMessage = $_POST['custom_message'];
-
         Logger::logCustomMessage($customMessage);
     }
 }
-
 
 ?>
 
@@ -113,18 +122,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </form>
 
 <h3>Student Data</h3>
-<pre>
-        <?php
-        Logger::displayStudentData();
-        ?>
-</pre>
+<?php Logger::displayStudentData(); ?>
 
 <h3>Custom Messages</h3>
-<pre>
-        <?php
-        Logger::displayCustomMessages();
-        ?>
-</pre>
+<?php Logger::displayCustomMessages(); ?>
 
 </body>
 </html>

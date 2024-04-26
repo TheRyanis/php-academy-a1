@@ -4,7 +4,7 @@
         "time": "2024-04-24 16:30:54",
         "late": "Yes"
     },
-    "total_arrivals": 5,
+    "total_arrivals": 8,
     "1": {
         "name": "peter",
         "time": "2024-04-24 16:30:58",
@@ -23,6 +23,21 @@
     "4": {
         "name": "jozo",
         "time": "2024-04-24 16:32:59",
+        "late": "Yes"
+    },
+    "5": {
+        "name": "Roland",
+        "time": "2024-04-26 15:31:03",
+        "late": "Yes"
+    },
+    "6": {
+        "name": "Roland",
+        "time": "2024-04-26 15:34:18",
+        "late": "Yes"
+    },
+    "7": {
+        "name": "Roland",
+        "time": "2024-04-26 15:50:45",
         "late": "Yes"
     }
 }
