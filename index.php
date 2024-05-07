@@ -25,7 +25,7 @@ class Logger {
 
             $totalArrivals = isset($logData['total_arrivals']) ? $logData['total_arrivals'] + 1 : 1;
 
-            $logData[] = array(
+            $logData[$totalArrivals] = array(
                 'name' => $name,
                 'time' => date("Y-m-d H:i:s"),
                 'late' => $late ? 'Yes' : 'No'
