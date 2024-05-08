@@ -4,7 +4,7 @@
         "time": "2024-05-07 12:55:51",
         "late": "Yes"
     },
-    "total_arrivals": 5,
+    "total_arrivals": 10,
     "2": {
         "name": "peter",
         "time": "2024-05-07 12:55:56",
@@ -23,6 +23,31 @@
     "5": {
         "name": "lukas",
         "time": "2024-05-07 12:56:08",
+        "late": "Yes"
+    },
+    "6": {
+        "name": "Adam",
+        "time": "2024-05-08 15:50:04",
+        "late": "Yes"
+    },
+    "7": {
+        "name": "Peter",
+        "time": "2024-05-08 15:50:09",
+        "late": "Yes"
+    },
+    "8": {
+        "name": "Ctibor",
+        "time": "2024-05-08 15:50:18",
+        "late": "Yes"
+    },
+    "9": {
+        "name": "Ctibor",
+        "time": "2024-05-08 15:52:27",
+        "late": "Yes"
+    },
+    "10": {
+        "name": "Ctibor",
+        "time": "2024-05-08 15:53:17",
         "late": "Yes"
     }
 }

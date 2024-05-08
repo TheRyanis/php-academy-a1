@@ -1,5 +1,4 @@
 <?php
-
 date_default_timezone_set("Europe/Bratislava");
 
 echo date("Y-m-d H:i:s");
@@ -100,6 +99,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
+if (isset($_GET['name'])) {
+    $nameFromUrl = $_GET['name'];
+    $late = Logger::isLateMorning();
+    Logger::logStudent($nameFromUrl, $late);
+}
 ?>
 
 <!DOCTYPE html>
