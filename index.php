@@ -22,15 +22,12 @@ class Logger {
         if (!empty($name)) {
             $logData = file_exists(self::students) ? json_decode(file_get_contents(self::students), true) : [];
 
-            $totalArrivals = isset($logData['total_arrivals']) ? $logData['total_arrivals'] + 1 : 1;
-
-            $logData[$totalArrivals] = array(
+            $logData[] = array(
                 'name' => $name,
                 'time' => date("Y-m-d H:i:s"),
                 'late' => $late ? 'Yes' : 'No'
             );
 
-            $logData['total_arrivals'] = $totalArrivals;
             file_put_contents(self::students, json_encode($logData, JSON_PRETTY_PRINT));
         }
     }
@@ -54,17 +51,15 @@ class Logger {
         if (file_exists(self::students)) {
             $studentData = json_decode(file_get_contents(self::students), true);
             if (!empty($studentData)) {
-                echo "<h3>Total Students: {$studentData['total_arrivals']}</h3>";
+                echo "<h3>Total Students: " . count($studentData) . "</h3>";
                 echo "<table border='1'>";
                 echo "<tr><th>Name</th><th>Time</th><th>Late</th></tr>";
-                foreach ($studentData as $key => $student) {
-                    if ($key !== 'total_arrivals') {
-                        echo "<tr>";
-                        echo "<td>{$student['name']}</td>";
-                        echo "<td>{$student['time']}</td>";
-                        echo "<td>{$student['late']}</td>";
-                        echo "</tr>";
-                    }
+                foreach ($studentData as $student) {
+                    echo "<tr>";
+                    echo "<td>{$student['name']}</td>";
+                    echo "<td>{$student['time']}</td>";
+                    echo "<td>{$student['late']}</td>";
+                    echo "</tr>";
                 }
                 echo "</table>";
                 return;
